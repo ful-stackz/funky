@@ -1,3 +1,5 @@
+![CI](https://github.com/ful-stackz/funky/workflows/CI/badge.svg?branch=master)
+
 # funky
 
 > Getting `funky` with Deno!
