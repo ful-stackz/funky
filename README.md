@@ -1,5 +1,5 @@
 ![CI](https://github.com/ful-stackz/funky/workflows/CI/badge.svg?branch=master)
-[![deno.land status](https://img.shields.io/badge/deno.land%2Fx%2Ffunky-awaiting%20approval-yellow?style=flat&logo=deno)](https://github.com/denoland/deno_website2/pull/823)
+[![deno.land status](https://img.shields.io/badge/deno.land%2Fx%2Ffunky-v0.1.0-green?style=flat&logo=deno)](https://deno.land/x/funky)
 
 
 # funky
