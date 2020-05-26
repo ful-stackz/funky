@@ -6,31 +6,31 @@ enum OptionType {
 }
 
 interface OptionMatch<T, U> {
-  some: (value: T) => U;
-  none: () => U;
+  some(value: T): U;
+  none(): U;
 }
 
 export interface Option<T> {
-  _type: OptionType;
-  isSome: boolean;
-  isNone: boolean;
-  match: <U>(handler: OptionMatch<T, U>) => U;
-  matchSome: (handler: (value: T) => void) => void;
-  matchNone: (handler: () => void) => void;
-  unwrap: () => T | never;
-  unwrapOr: (def: T) => T;
+  readonly _type: OptionType;
+  readonly isSome: boolean;
+  readonly isNone: boolean;
+  match<U>(handler: OptionMatch<T, U>): U;
+  matchSome(handler: (value: T) => void): void;
+  matchNone(handler: () => void): void;
+  unwrap(): T | never;
+  unwrapOr(def: T): T;
 }
 
 interface OptionSome<T> extends Option<T> {
-  matchSome: (handler: (value: T) => void) => void;
-  matchNone: (handler: () => void) => void;
-  unwrap: () => T;
+  matchSome(handler: (value: T) => void): void;
+  matchNone(handler: () => void): void;
+  unwrap(): T;
 }
 
-interface OptionNone<T> extends Option<T> {
-  matchSome: (handler: (value: T) => void) => void;
-  matchNone: (handler: () => void) => void;
-  unwrap: () => never;
+interface OptionNone<T = never> extends Option<T> {
+  matchSome(handler: (value: T) => void): void;
+  matchNone(handler: () => void): void;
+  unwrap(): never;
 }
 
 export const some = <T>(value: T): OptionSome<T> => {
@@ -66,7 +66,7 @@ export const some = <T>(value: T): OptionSome<T> => {
   };
 };
 
-export const none = <T>(): OptionNone<T> => {
+export const none = <T = never>(): OptionNone<T> => {
   return {
     _type: OptionType.None,
     isSome: false,
