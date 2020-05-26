@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 27/05/2020
+
+- Improved `Option<T>`, `OptionSome<T>` and `OptionNone<T>` interfaces
+- Improved `Result<T, E>`, `ResultOk<T, E>` and `ResultErr<T, E>` interfaces
+
 ## [0.1.0] - 26/05/2020
 
 ### Added
