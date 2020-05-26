@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: [ "*" ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup Deno environment
+      uses: denolib/setup-deno@v1.3.0
+      with:
+        deno-version: v1.0
+    
+    - name: Run tests
+      run: deno test "$GITHUB_WORKSPACE/test/"
