@@ -6,37 +6,39 @@ enum ResultType {
 }
 
 export interface ResultMatch<T, E, U> {
-  ok: (value: T) => U;
-  err: (error: E) => U;
+  ok(value: T): U;
+  err(error: E): U;
 }
 
 export interface Result<T, E> {
-  _type: ResultType;
-  isOk: boolean;
-  isErr: boolean,
-  match: <U>(handler: ResultMatch<T, E, U>) => U;
-  matchOk: (handler: (value: T) => void) => void;
-  matchErr: (handler: (error: E) => void) => void;
-  unwrap: () => T | never;
-  unwrapOr: (def: T) => T;
-  unwrapErr: () => E | never;
+  readonly _type: ResultType;
+  readonly isOk: boolean;
+  readonly isErr: boolean,
+  match<U>(handler: ResultMatch<T, E, U>): U;
+  matchOk(handler: (value: T) => void): void;
+  matchErr(handler: (error: E) => void): void;
+  unwrap(): T | never;
+  unwrapOr(def: T): T;
+  unwrapErr(): E | never;
 }
 
-interface ResultOk<T, E> extends Result<T, E> {
-  matchOk: (handler: (value: T) => void) => void;
-  matchErr: (handler: (error: E) => void) => void;
-  unwrap: () => T;
-  unwrapErr: () => never;
+interface ResultOk<T, E = never> extends Result<T, E> {
+  match<U>(handler: ResultMatch<T, never, U>): U;
+  matchOk(handler: (value: T) => void): void;
+  matchErr(handler: (error: E) => void): void;
+  unwrap(): T;
+  unwrapErr(): never;
 }
 
 interface ResultErr<T, E> extends Result<T, E> {
-  matchOk: (handler: (value: T) => void) => void;
-  matchErr: (handler: (error: E) => void) => void;
-  unwrap: () => never;
-  unwrapErr: () => E;
+  match<U>(handler: ResultMatch<never, E, U>): U;
+  matchOk(handler: (value: T) => void): void;
+  matchErr(handler: (error: E) => void): void;
+  unwrap(): never;
+  unwrapErr(): E;
 }
 
-export const ok = <T, E>(value: T): ResultOk<T, E> => {
+export const ok = <T, E = never>(value: T): ResultOk<T, E> => {
   if (isMissing(value)) {
     throw new Error(
       "ok(value) expected @value to be present, but it was missing."
@@ -47,7 +49,7 @@ export const ok = <T, E>(value: T): ResultOk<T, E> => {
     _type: ResultType.Ok,
     isOk: true,
     isErr: false,
-    match: <U>(handler: ResultMatch<T, E, U>): U => {
+    match: <U>(handler: ResultMatch<T, never, U>): U => {
       if (!isFunction(handler.ok)) {
         throw new Error(
           "ResulkOk.match(handler) expected @handler.ok to be a function."
@@ -79,7 +81,7 @@ export const err = <T, E>(error: E): ResultErr<T, E> => {
     _type: ResultType.Err,
     isOk: false,
     isErr: true,
-    match: <U>(handler: ResultMatch<T, E, U>): U => {
+    match: <U>(handler: ResultMatch<never, E, U>): U => {
       if (!isFunction(handler.err)) {
         throw new Error(
           "ResultErr.match(handler) expected @handler.err to be a function."
