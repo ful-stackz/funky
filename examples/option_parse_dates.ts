@@ -16,8 +16,6 @@ const tryParseDate = (value: string): Option<Date> => {
   const goodStringifiedDate = "2020-05-25T02:01:20.799Z";
   const parsedDate = tryParseDate(goodStringifiedDate);
 
-  console.log(parsedDate);
-
   assert(parsedDate.isSome);
   assert(!parsedDate.isNone);
 
@@ -33,7 +31,9 @@ const tryParseDate = (value: string): Option<Date> => {
   parsedDate.matchSome((value: Date) => {
     assertEquals(value.getDate(), 25);
   });
-  assertThrows(() => parsedDate.matchNone(() => {}), Error);
+  parsedDate.matchNone(() => {
+    fail();
+  });
 
   assertEquals(parsedDate.unwrap().getMonth(), 4);
   assertNotEquals(parsedDate.unwrapOr(new Date(0)).getTime(), 0);
@@ -55,7 +55,9 @@ const tryParseDate = (value: string): Option<Date> => {
     },
   });
 
-  assertThrows(() => parsedDate.matchSome(() => {}), Error);
+  parsedDate.matchSome(() => {
+    fail();
+  });
   parsedDate.matchNone(() => {
     assert(true);
   });

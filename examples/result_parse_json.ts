@@ -38,7 +38,9 @@ const parseJsonAs = <T>(text: string): Result<T, string> => {
   parsed.matchOk((value) => {
     assertEquals(value.arguments[0], "world");
   });
-  assertThrows(() => parsed.matchErr(() => {}), Error);
+  parsed.matchErr(() => {
+    fail();
+  });
 
   assertEquals(parsed.unwrap().function, "sayHello");
   assertThrows(() => parsed.unwrapErr(), Error);
@@ -70,7 +72,9 @@ const parseJsonAs = <T>(text: string): Result<T, string> => {
     }
   });
 
-  assertThrows(() => parsed.matchOk(() => {}), Error);
+  parsed.matchOk(() => {
+    fail();
+  });
   parsed.matchErr((error: string) => {
     assertEquals(error, "Unexpected token n in JSON at position 1");
   });
