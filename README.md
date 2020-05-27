@@ -18,12 +18,16 @@ This library is heavily inspired by the awesome
 - [Result type](./lib/result)
 - [Utility functions](./lib/utils)
   - [`isArray()`](./lib/utils#isarray)
+  - [`isArrayEmpty()`](./lib/utils#isarrayempty)
+  - [`isArrayOf()`](./lib/utils#isarrayof)
   - [`isFunction()`](./lib/utils#isfunction)
   - [`isMissing()`](./lib/utils#ismissing)
   - [`isNull()`](./lib/utils#isnull)
+  - [`isNumber()`](./lib/utils#isnumber)
   - [`isObject()`](./lib/utils#isobject)
   - [`isOneOf()`](./lib/utils#isoneof)
   - [`isPresent()`](./lib/utils#ispresent)
+  - [`isString()`](./lib/utils#isstring)
   - [`isUndefined()`](./lib/utils#isundefined)
 
 ## Usage
