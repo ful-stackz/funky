@@ -1,10 +1,9 @@
-![CI](https://github.com/ful-stackz/funky/workflows/CI/badge.svg?branch=master)
-[![deno.land status](https://img.shields.io/badge/deno.land%2Fx%2Ffunky-v0.2.0-green?style=flat&logo=deno)](https://deno.land/x/funky)
-
-
 # funky
 
 > Getting `funky` with Deno!
+
+![CI](https://github.com/ful-stackz/funky/workflows/CI/badge.svg?branch=master)
+[![deno.land status](https://img.shields.io/badge/deno.land%2Fx%2Ffunky-v0.2.0-green?style=flat&logo=deno)](https://deno.land/x/funky)
 
 `funky` brings the beloved `Option<T>`, `Result<T, E>` and other functional 
 utilities into your next **Deno** masterpiece!
@@ -18,12 +17,16 @@ This library is heavily inspired by the awesome
 - [Result type](./lib/result)
 - [Utility functions](./lib/utils)
   - [`isArray()`](./lib/utils#isarray)
+  - [`isArrayEmpty()`](./lib/utils#isarrayempty)
+  - [`isArrayOf()`](./lib/utils#isarrayof)
   - [`isFunction()`](./lib/utils#isfunction)
   - [`isMissing()`](./lib/utils#ismissing)
   - [`isNull()`](./lib/utils#isnull)
+  - [`isNumber()`](./lib/utils#isnumber)
   - [`isObject()`](./lib/utils#isobject)
   - [`isOneOf()`](./lib/utils#isoneof)
   - [`isPresent()`](./lib/utils#ispresent)
+  - [`isString()`](./lib/utils#isstring)
   - [`isUndefined()`](./lib/utils#isundefined)
 
 ## Usage

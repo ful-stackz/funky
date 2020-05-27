@@ -1,12 +1,16 @@
-import { assert } from "https://deno.land/std/testing/asserts.ts";
+import { assert, assertEquals } from "https://deno.land/std/testing/asserts.ts";
 import {
   isArray,
+  isArrayEmpty,
+  isArrayOf,
   isFunction,
   isMissing,
   isNull,
+  isNumber,
   isObject,
   isOneOf,
   isPresent,
+  isString,
   isUndefined,
 } from "../mod.ts";
 
@@ -21,6 +25,45 @@ Deno.test({
     assert(!isArray(null), "Expected isArray(null) to be false.");
     assert(!isArray(undefined), "Expected isArray(undefined) to be false.");
     assert(!isArray("stringy"), "Expected isArray('stringy') to be false.");
+  },
+});
+
+Deno.test({
+  name: "isArrayEmpty",
+  fn: () => {
+    assert(isArrayEmpty([]));
+
+    assert(!isArrayEmpty([1]));
+    assert(!isArrayEmpty([{}]));
+    assert(!isArrayEmpty([true]));
+    assert(!isArrayEmpty([false]));
+    assert(!isArrayEmpty(["string"]));
+  },
+});
+
+Deno.test({
+  name: "isArrayOf",
+  fn: () => {
+    const numbersArray = [-1, 0, 1, 2, 3];
+    assert(isArrayOf<number>(numbersArray, isNumber));
+
+    const stringsArray = ["", "one", "two", "three"];
+    assert(isArrayOf<string>(stringsArray, isString));
+
+    const objectsArray = [
+      { },
+      { id: 1 },
+      { inner: { id: 1 } },
+    ];
+    assert(isArrayOf<Object>(objectsArray, isObject));
+
+    const mixedArray = [
+      true,
+      "",
+      1,
+      { },
+    ];
+    assertEquals(isArrayOf<number>(mixedArray, isNumber), false);
   },
 });
 
@@ -66,6 +109,21 @@ Deno.test({
     assert(!isNull({}));
     assert(!isNull(false));
     assert(!isNull(undefined));
+  },
+});
+
+Deno.test({
+  name: "isNumber",
+  fn: () => {
+    assert(isNumber(0));
+    assert(isNumber(1));
+    assert(isNumber(Math.PI));
+    assert(isNumber(Math.E));
+
+    assert(!isNumber(false));
+    assert(!isNumber("0"));
+    assert(!isNumber({}));
+    assert(!isNumber(() => {}));
   },
 });
 
@@ -120,6 +178,21 @@ Deno.test({
 
     assert(!isPresent(null));
     assert(!isPresent(undefined));
+  },
+});
+
+Deno.test({
+  name: "isString",
+  fn: () => {
+    assert(isString(""));
+    assert(isString("false"));
+    assert(isString("0"));
+    assert(isString("{}"));
+
+    assert(!isString(false));
+    assert(!isString(0));
+    assert(!isString({}));
+    assert(!isString(() => {}));
   },
 });
 

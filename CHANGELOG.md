@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- New utility functions along with tests and docs
+  - `isArrayOf`
+  - `isArrayEmpty`
+  - `isString`
+  - `isNumber`
+  
+### Fixed
+
+- Typos and outdated information in `lib/utils/README.md`
+
 ## [0.2.0] - 27/05/2020
 
 - Improved `Option<T>`, `OptionSome<T>` and `OptionNone<T>` interfaces
