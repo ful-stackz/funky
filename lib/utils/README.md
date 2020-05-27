@@ -31,14 +31,15 @@ Indicates whether the `array` argument is an empty array.
 
 > `isArrayOf<T>(array: any[], checkType: (value: any): value is T): array is T[]`
 
-Provides a type-safe way indication of whether the `array` argument is an array
-where every item is of type `T`.
+Provides a type-safe indication of whether the `array` argument is an array
+where every item is of type `T`. This is done by invoking the specified `checkType`
+function on every item of the `array`.
 
 ## `isFunction()`
 
 > `isFunction(value: any): value is Function`
 
-Provides a type-safe indication of wheter the `value` argument is a function.
+Provides a type-safe indication of whether the `value` argument is a function.
 
 ## `isMissing()`
 
@@ -49,9 +50,9 @@ that is either `null` or `undefined`.
 
 ## `isNull()`
 
-> `isNull(value: any): boolean`
+> `isNull(value: any): value is null`
 
-Indicates whether `value` is `null`.
+Provides a type-safe indication of whether the `value` argument is `null`.
 
 ## `isNumber()`
 
