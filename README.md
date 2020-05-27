@@ -39,7 +39,7 @@ This library is heavily inspired by the awesome
 import { Option, some, none } from "https://deno.land/x/funky/mod.ts";
 import { isUndefined } from "https://deno.land/x/funky/mod.ts";
 
-const getEnvVar = (key: string): Option<User> => {
+const getEnvVar = (key: string): Option<string> => {
   const value = Deno.env.get(key);
   return isUndefined(value) ? none() : some(value);
 };
