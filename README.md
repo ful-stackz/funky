@@ -3,7 +3,7 @@
 > Getting `funky` with Deno!
 
 ![CI](https://github.com/ful-stackz/funky/workflows/CI/badge.svg?branch=master)
-[![deno.land status](https://img.shields.io/badge/deno.land%2Fx%2Ffunky-v0.2.0-green?style=flat&logo=deno)](https://deno.land/x/funky)
+[![deno.land status](https://img.shields.io/badge/deno.land%2Fx%2Ffunky-v0.3.0-green?style=flat&logo=deno)](https://deno.land/x/funky@v0.3.0)
 
 `funky` brings the beloved `Option<T>`, `Result<T, E>` and other functional 
 utilities into your next **Deno** masterpiece!
