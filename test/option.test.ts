@@ -3,7 +3,6 @@ import {
   assertEquals,
   assertThrows,
   fail,
-  assertThrowsAsync,
 } from "https://deno.land/std/testing/asserts.ts";
 import { Option, some, none } from "../mod.ts";
 
@@ -49,6 +48,12 @@ const verifyOptionSome = <T>(value: T): void => {
     assertEquals(result.unwrap(), "next");
   })();
 
+  (() => {
+    const next = () => some("pass");
+    const result = option.andThen(next);
+    assertEquals(result.unwrap(), "pass");
+  })();
+
   assertEquals(option.unwrap(), value);
   assertEquals(option.unwrapOr({} as any), value);
 };
@@ -92,6 +97,12 @@ const verifyOptionNone = <T>(): void => {
   (() => {
     const otherOption = some("next");
     const result = option.and(otherOption);
+    assert(result.isNone);
+  })();
+
+  (() => {
+    const next = (value: any) => some(value);
+    const result = option.andThen(next);
     assert(result.isNone);
   })();
 

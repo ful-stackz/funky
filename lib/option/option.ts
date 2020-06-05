@@ -20,6 +20,7 @@ export interface Option<T> {
   matchNone(handler: () => void): void;
   or<U>(other: Option<U>): Option<T | U>;
   and<U>(other: Option<U>): Option<U>;
+  andThen<U>(handler: (value: T) => Option<U>): Option<U>;
   unwrap(): T | never;
   unwrapOr(def: T): T;
 }
@@ -30,6 +31,7 @@ interface OptionSome<T> extends Option<T> {
   matchNone(handler: () => void): void;
   or<U>(other: Option<U>): Option<T>;
   and<U>(other: Option<U>): Option<U>;
+  andThen<U>(handler: (value: T) => Option<U>): Option<U>;
   unwrap(): T;
 }
 
@@ -39,6 +41,7 @@ interface OptionNone<T = never> extends Option<T> {
   matchNone(handler: () => void): void;
   or<U>(other: Option<U>): Option<U>;
   and<U>(other: Option<U>): OptionNone<U>;
+  andThen<U>(handler: (value: T) => Option<U>): OptionNone<U>;
   unwrap(): never;
 }
 
@@ -80,6 +83,14 @@ export const some = <T>(value: T): OptionSome<T> => {
     matchNone: (): void => {},
     or: (): Option<T> => some(value),
     and: <U>(other: Option<U>) => other,
+    andThen: <U>(handler: (value: T) => Option<U>): Option<U> => {
+      if (!isFunction(handler)) {
+        throw new Error(
+          "OptionSome.andThen(handler) expected @handler to be a function."
+        );
+      }
+      return handler(value);
+    },
     unwrap: (): T => value,
     unwrapOr: (): T => value,
   };
@@ -112,6 +123,7 @@ export const none = <T = never>(): OptionNone<T> => {
     },
     or: <U>(other: Option<U>): Option<U> => other,
     and: <U>(): OptionNone<U> => none<U>(),
+    andThen: <U>(): OptionNone<U> => none<U>(),
     unwrap: (): never => {
       throw new Error(
         "Cannot execute unwrap() on type OptionNone."

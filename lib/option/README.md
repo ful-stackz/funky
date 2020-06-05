@@ -11,6 +11,7 @@ This directory contains the `Option<T>` type along with some related utilities.
   - [`matchNone()`](#matchnone)
   - [`or()`](#or)
   - [`and()`](#and)
+  - [`andThen()`](#andthen)
   - [`unwrap()`](#unwrap)
   - [`unwrapOr()`](#unwrapor)
 - [Utilties](#utilities)
@@ -240,6 +241,32 @@ const a = none();
 const b = some(42);
 const result = a.and(b);
 console.log(result.isSome); // false
+```
+
+### `andThen()`
+
+> `Option<T>.andThen<U>(handler: (value: T) => Option<U>): Option<U>`
+
+If the option is an `OptionSome` instance invokes the `@handler` function,
+providing the wrapped value as the argument. Returns the result of the
+`@handler`.
+Otherwise, when the option is `OptionNone` returns `OptionNone`.
+
+This function is also known as `flatMap` in other languages.
+
+#### Examples
+
+```typescript
+const userId = 5;
+const findPersonById: Option<User> = (id) => { ... }
+const getFavoriteNumber: Option<number> = (user) => 42;
+console.log(some(userId).andThen(findPersonById).andThen(getFavoriteNumber).unwrap()); // 42
+```
+
+```typescript
+const findPersonById: Option<User> = (id) => { ... }
+const getFavoriteNumber: Option<number> = (user) => 42;
+console.log(none().andThen(findPersonById).andThen(getFavoriteNumber).isNone); // true
 ```
 
 ### `unwrap()`
