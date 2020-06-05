@@ -9,6 +9,7 @@ This directory contains the `Option<T>` type along with some related utilities.
   - [`match()`](#match)
   - [`matchSome()`](#matchsome)
   - [`matchNone()`](#matchnone)
+  - [`or()`](#or)
   - [`unwrap()`](#unwrap)
   - [`unwrapOr()`](#unwrapor)
 - [Utilties](#utilities)
@@ -179,6 +180,28 @@ answer.matchNone(() => {
   console.log("No answer");
 });
 // outputs > "No answer"
+```
+
+### `or()`
+
+> `Option<T>.or<U>(other: Option<U>): Option<T | U>`
+
+If the option is an `OptionNone` returns `@other`. Otherwise keeps the original.
+
+#### Examples
+
+```typescript
+const option = some(42);
+const other = some("default");
+const result = option.or(other);
+console.log(result.unwrap()); // 42
+```
+
+```typescript
+const option = none();
+const other = some("default");
+const result = option.or(other);
+console.log(result.unwrap()); // "default"
 ```
 
 ### `unwrap()`

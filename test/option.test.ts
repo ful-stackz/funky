@@ -37,6 +37,12 @@ const verifyOptionSome = <T>(value: T): void => {
     fail();
   });
 
+  (() => {
+    const otherOption = some("default");
+    const orResult = option.or(otherOption);
+    assertEquals(orResult.unwrap(), value);
+  })();
+
   assertEquals(option.unwrap(), value);
   assertEquals(option.unwrapOr({} as any), value);
 };
@@ -70,6 +76,12 @@ const verifyOptionNone = <T>(): void => {
   option.matchNone(() => {
     assert(true);
   });
+
+  (() => {
+    const otherOption = some("default");
+    const orResult = option.or(otherOption);
+    assertEquals(orResult.unwrap(), "default");
+  })();
 
   assertThrows(() => option.unwrap());
   assertEquals(option.unwrapOr(42 as any), 42);
