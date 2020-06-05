@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `Option<T>.map` function with unit tests and docs
+
 ## [0.3.0] - 27/05/2020
 
 ### Added

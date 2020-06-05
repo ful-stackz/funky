@@ -14,6 +14,7 @@ export interface Option<T> {
   readonly _type: OptionType;
   readonly isSome: boolean;
   readonly isNone: boolean;
+  map<U>(handler: (value: T) => U): Option<U>;
   match<U>(handler: OptionMatch<T, U>): U;
   matchSome(handler: (value: T) => void): void;
   matchNone(handler: () => void): void;
@@ -22,12 +23,14 @@ export interface Option<T> {
 }
 
 interface OptionSome<T> extends Option<T> {
+  map<U>(handler: (value: T) => U): OptionSome<U>;
   matchSome(handler: (value: T) => void): void;
   matchNone(handler: () => void): void;
   unwrap(): T;
 }
 
 interface OptionNone<T = never> extends Option<T> {
+  map<U>(handler: (value: T) => U): OptionNone<U>;
   matchSome(handler: (value: T) => void): void;
   matchNone(handler: () => void): void;
   unwrap(): never;
@@ -44,6 +47,14 @@ export const some = <T>(value: T): OptionSome<T> => {
     _type: OptionType.Some,
     isSome: true,
     isNone: false,
+    map: <U>(handler: (value: T) => U): OptionSome<U> => {
+      if (!isFunction(handler)) {
+        throw new Error(
+          "OptionSome.map(handler) expected @handler to be a function."
+        );
+      }
+      return some(handler(value));
+    },
     match: <U>(handler: OptionMatch<T, U>): U => {
       if (!isFunction(handler.some)) {
         throw new Error(
@@ -71,6 +82,9 @@ export const none = <T = never>(): OptionNone<T> => {
     _type: OptionType.None,
     isSome: false,
     isNone: true,
+    map: <U>(): OptionNone<U> => {
+      return none<U>();
+    },
     match: <U>(handler: OptionMatch<T, U>): U => {
       if (!isFunction(handler.none)) {
         throw new Error(

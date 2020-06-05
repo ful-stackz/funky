@@ -5,6 +5,7 @@ This directory contains the `Option<T>` type along with some related utilities.
 - [`Option<T>`](#optiont)
   - [`isSome`](#issome)
   - [`isNone`](#isnone)
+  - [`map`](#map)
   - [`match()`](#match)
   - [`matchSome()`](#matchsome)
   - [`matchNone()`](#matchnone)
@@ -61,6 +62,31 @@ console.log(option.isNone); // false
 ```typescript
 const option = none();
 console.log(option.isNone); // true
+```
+
+### `map()`
+
+> `Option<T>.map(handler: (value: T) => U): Option<U>`
+
+If the option is an `OptionSome` instance invokes the `@handler` function,
+providing the wrapped value as the argument. Returns the result of the
+`@handler` as an `Option`.
+Otherwise, when the option is an `OptionNone` instance returns `OptionNone`.
+
+#### Examples
+
+```typescript
+const option = some("42");
+const mapped = option.map(parseInt);
+console.log(typeof option.unwrap()); // string
+console.log(typeof mapped.unwrap()); // number
+```
+
+```typescript
+const option = none();
+const mapped = option.map(() => "value");
+console.log(option.isNone); // true
+console.log(mapped.isNone); // true
 ```
 
 ### `match()`

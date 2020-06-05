@@ -3,6 +3,7 @@ import {
   assertEquals,
   assertThrows,
   fail,
+  assertThrowsAsync,
 } from "https://deno.land/std/testing/asserts.ts";
 import { Option, some, none } from "../mod.ts";
 
@@ -11,6 +12,13 @@ const verifyOptionSome = <T>(value: T): void => {
 
   assert(option.isSome);
   assertEquals(option.isNone, false);
+
+  (() => {
+    const mappedOption = option.map(() => "mapped");
+    assert(mappedOption.isSome);
+    assertEquals(mappedOption.isNone, false);
+    assertEquals(mappedOption.unwrap(), "mapped");
+  })();
 
   option.match({
     some: (val) => {
@@ -38,6 +46,13 @@ const verifyOptionNone = <T>(): void => {
 
   assert(option.isNone);
   assertEquals(option.isSome, false);
+
+  (() => {
+    const mappedOption = option.map(() => "mapped");
+    assert(mappedOption.isNone);
+    assertEquals(mappedOption.isSome, false);
+    assertThrows(() => mappedOption.unwrap());
+  })();
 
   option.match({
     some: () => {
