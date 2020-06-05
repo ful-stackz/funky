@@ -10,6 +10,7 @@ This directory contains the `Option<T>` type along with some related utilities.
   - [`matchSome()`](#matchsome)
   - [`matchNone()`](#matchnone)
   - [`or()`](#or)
+  - [`and()`](#and)
   - [`unwrap()`](#unwrap)
   - [`unwrapOr()`](#unwrapor)
 - [Utilties](#utilities)
@@ -202,6 +203,43 @@ const option = none();
 const other = some("default");
 const result = option.or(other);
 console.log(result.unwrap()); // "default"
+```
+
+### `and()`
+
+> `Option<T>.and<U>(other: Option<U>): Option<U>`
+
+If the option is an `OptionSome` instance returns `@other`. Otherwise returns
+`OptionNone`.
+
+#### Examples
+
+```typescript
+const a = some(42);
+const b = some("more");
+const result = a.and(b);
+console.log(result.isSome); // true
+```
+
+```typescript
+const a = some(42);
+const b = none();
+const result = a.and(b);
+console.log(result.isSome); // false
+```
+
+```typescript
+const a = none();
+const b = none();
+const result = a.and(b);
+console.log(result.isSome); // false
+```
+
+```typescript
+const a = none();
+const b = some(42);
+const result = a.and(b);
+console.log(result.isSome); // false
 ```
 
 ### `unwrap()`
