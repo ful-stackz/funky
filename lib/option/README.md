@@ -5,7 +5,7 @@ This directory contains the `Option<T>` type along with some related utilities.
 - [`Option<T>`](#optiont)
   - [`isSome`](#issome)
   - [`isNone`](#isnone)
-  - [`map`](#map)
+  - [`map()`](#map)
   - [`match()`](#match)
   - [`matchSome()`](#matchsome)
   - [`matchNone()`](#matchnone)
