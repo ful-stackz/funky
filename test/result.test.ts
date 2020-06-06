@@ -39,6 +39,14 @@ const verifyResultOk = (value: any): void => {
   assertEquals(result.unwrap(), value);
   assertEquals(result.unwrapOr({} as any), value);
   assertThrows(() => result.unwrapErr());
+
+  (() => {
+    const nextOk = () => ok("success");
+    const nextErr = () => err("failed");
+    assertEquals(result.andThen(nextOk).unwrap(), "success");
+    // @ts-ignore
+    assertEquals(result.andThen(nextErr).unwrapErr(), "failed");
+  })();
 };
 
 const verifyResultErr = (error: any): void => {
@@ -72,6 +80,13 @@ const verifyResultErr = (error: any): void => {
   assertThrows(() => result.unwrap());
   assertEquals(result.unwrapOr(42), 42);
   assertEquals(result.unwrapErr(), error);
+
+  (() => {
+    const nextOk = () => ok("success");
+    const nextErr = () => err("failed");
+    assert(result.andThen(nextOk).isErr);
+    assert(result.andThen(nextErr).isErr);
+  })();
 };
 
 Deno.test({

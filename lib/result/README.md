@@ -12,6 +12,7 @@ This directory contains the `Result<T, E>` type along with some related utilitie
   - [`unwrap()`](#unwrap)
   - [`unwrapOr()`](#unwrapor)
   - [`unwrapErr()`](#unwraperr)
+  - [`andThen()`](#andthen)
 - [Utilties](#utilities)
   - [`isResult()`](#isresult)
   - [`isOk()`](#isok-1)
@@ -203,7 +204,7 @@ const result = err("error");
 console.log(result.unwrap()); // throws Error
 ```
 
-## `unwrapOr()`
+### `unwrapOr()`
 
 > `Result<T, E>.unwrapOr(def: T): T`
 
@@ -239,6 +240,34 @@ console.log(result.unwrapErr()); // throws Error
 ```typescript
 const result = err("error");
 console.log(result.unwrapErr()); // "error"
+```
+
+### `andThen()`
+
+> `Result<T, E>.andThen<U>(handler: (value: T) => Result<U, E>): Result<U, E>`
+
+If the option is an `OptionOk` invokes the `@handler`, providing the wrapped
+value as the argument. Returns the result of the `@handler`.
+Otherwise, when the result is `ResultErr` the `@handler` is not invoked and the
+original `ResultErr` is returned.
+
+#### Examples
+
+```typescript
+function getUserById(id: number): Result<User, Error> { ... }
+function getFavoriteNumber(user: User): Result<number, Error> { return ok(5); }
+
+const result = getUserById(42);
+console.log(result.andThen(updateUsername).unwrap()); // 5
+```
+
+```typescript
+function getUserById(id: number): Result<User, Error> { ... }
+function getFavoriteNumber(user: User): Result<number, Error> { return ok(5); }
+
+const result = err(new Error("Could not find user"));
+console.log(result.andThen(updateUsername).unwrap()); // throws Error
+console.log(result.andThen(updateUsername).unwrapErr()); // "Could not find user"
 ```
 
 ## Utilities

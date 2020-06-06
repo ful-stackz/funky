@@ -21,6 +21,7 @@ export interface Result<T, E> {
   unwrap(): T | never;
   unwrapOr(def: T): T;
   unwrapErr(): E | never;
+  andThen<U>(handler: (value: T) => Result<U, E>): Result<U, E>;
 }
 
 interface ResultOk<T, E = never> extends Result<T, E> {
@@ -39,6 +40,7 @@ interface ResultErr<T, E> extends Result<T, E> {
   matchErr(handler: (error: E) => void): void;
   unwrap(): never;
   unwrapErr(): E;
+  andThen<U>(handler: (value: T) => Result<U, E>): ResultErr<never, E>;
 }
 
 export const ok = <T, E = never>(value: T): ResultOk<T, E> => {
@@ -84,6 +86,14 @@ export const ok = <T, E = never>(value: T): ResultOk<T, E> => {
         "Cannot execute unwrapErr() on type ResultOk."
       );
     },
+    andThen: <U>(handler: (value: T) => Result<U, E>): Result<U, E> => {
+      if (!isFunction(handler)) {
+        throw new Error(
+          "ResultErr.andThen(handler) expected @handler to be a function."
+        );
+      }
+      return handler(value);
+    },
   };
 };
 
@@ -117,6 +127,9 @@ export const err = <T, E>(error: E): ResultErr<T, E> => {
     },
     unwrapOr: (def: T): T => def,
     unwrapErr: (): E => error,
+    andThen: <U>(handler: (value: T) => Result<U, E>): ResultErr<never, E> => {
+      return err(error);
+    },
   };
 };
 
