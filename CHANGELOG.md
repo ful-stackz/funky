@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Option<T>.andThen` function with unit tests and docs
 - `Result<T, E>.map` function with unit tests and docs
 - `Result<T, E>.andThen` function with unit tests and docs
+- `Result<T, E>.orElse` function with unit tests and docs
 
 ## [0.3.0] - 27/05/2020
 

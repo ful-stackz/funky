@@ -3,6 +3,7 @@ import {
   assertEquals,
   assertThrows,
   fail,
+  assertNotEquals,
 } from "https://deno.land/std/testing/asserts.ts";
 import { ok, err } from "../mod.ts";
 
@@ -47,6 +48,12 @@ const verifyResultOk = (value: any): void => {
     // @ts-ignore
     assertEquals(result.andThen(nextErr).unwrapErr(), "failed");
   })();
+
+  // @ts-ignore
+  result.orElse(() => {
+    fail("ResultOk.orElse(handler) -> @handler should not be invoked");
+    return err({} as any);
+  });
 };
 
 const verifyResultErr = (error: any): void => {
@@ -86,6 +93,13 @@ const verifyResultErr = (error: any): void => {
     const nextErr = () => err("failed");
     assert(result.andThen(nextOk).isErr);
     assert(result.andThen(nextErr).isErr);
+  })();
+
+  (() => {
+    const nextOk = () => ok("success");
+    const nextErr = () => err("failed");
+    assertEquals(result.orElse(nextOk).unwrap(), "success");
+    assertEquals(result.orElse(nextErr).unwrapErr(), "failed");
   })();
 };
 

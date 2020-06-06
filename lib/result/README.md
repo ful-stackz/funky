@@ -13,6 +13,7 @@ This directory contains the `Result<T, E>` type along with some related utilitie
   - [`unwrapOr()`](#unwrapor)
   - [`unwrapErr()`](#unwraperr)
   - [`andThen()`](#andthen)
+  - [`orElse()`](#orelse)
 - [Utilties](#utilities)
   - [`isResult()`](#isresult)
   - [`isOk()`](#isok-1)
@@ -246,10 +247,10 @@ console.log(result.unwrapErr()); // "error"
 
 > `Result<T, E>.andThen<U>(handler: (value: T) => Result<U, E>): Result<U, E>`
 
-If the option is an `OptionOk` invokes the `@handler`, providing the wrapped
-value as the argument. Returns the result of the `@handler`.
-Otherwise, when the result is `ResultErr` the `@handler` is not invoked and the
-original `ResultErr` is returned.
+If the result is a `ResultOk` instance invokes the `@handler`, providing the
+wrapped value as the argument. Returns the result of the `@handler`.
+Otherwise, when the result is a `ResultErr` instance the `@handler` is not
+invoked and the original `ResultErr` is returned.
 
 #### Examples
 
@@ -268,6 +269,34 @@ function getFavoriteNumber(user: User): Result<number, Error> { return ok(5); }
 const result = err(new Error("Could not find user"));
 console.log(result.andThen(updateUsername).unwrap()); // throws Error
 console.log(result.andThen(updateUsername).unwrapErr()); // "Could not find user"
+```
+
+### `orElse()`
+
+> `Result<T, E>.orElse<U>(handler: (error: E) => Result<U, E>): Result<U, E>`
+
+If the result is a `ResultErr` instance invokes the `@handler`, providing the
+wrapped error as the argument. Returns the result of the `@handler`.
+Otherwise, when the result is a `ResultOk` instance the `@handler` is not
+invoked and the original `ResultOk` is returned.
+
+#### Examples
+
+```typescript
+function getEnvVar(key: string): Result<string, Error> { ... }
+function setEnvVar(key: string, value: string): Result<string, Error> { ... }
+
+function getOrCreateEnvVar(key: string, defaultValue: string): Result<string, Error> {
+  return getEnvVar(key).orElse((error) => {
+    return error === "not-found"
+      ? setEnvVar(key, defaultValue)
+      : err(error);
+  });
+}
+
+console.log(getEnvVar("THE_DATE")); // ResultErr
+console.log(getOrCreateEnvVar("THE_DATE", Date.now()); // ResultOk
+console.log(getEnvVar("THE_DATE")); // ResultOk
 ```
 
 ## Utilities

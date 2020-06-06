@@ -22,6 +22,7 @@ export interface Result<T, E> {
   unwrapOr(def: T): T;
   unwrapErr(): E | never;
   andThen<U>(handler: (value: T) => Result<U, E>): Result<U, E>;
+  orElse<U>(handler: (error: E) => Result<U, E>): Result<T | U, E>;
 }
 
 interface ResultOk<T, E = never> extends Result<T, E> {
@@ -31,6 +32,7 @@ interface ResultOk<T, E = never> extends Result<T, E> {
   matchErr(handler: (error: E) => void): void;
   unwrap(): T;
   unwrapErr(): never;
+  orElse<U>(handler: (error: E) => Result<U, E>): ResultOk<T, E>;
 }
 
 interface ResultErr<T, E> extends Result<T, E> {
@@ -41,6 +43,7 @@ interface ResultErr<T, E> extends Result<T, E> {
   unwrap(): never;
   unwrapErr(): E;
   andThen<U>(handler: (value: T) => Result<U, E>): ResultErr<never, E>;
+  orElse<U>(handler: (error: E) => Result<U, E>): Result<U, E>;
 }
 
 export const ok = <T, E = never>(value: T): ResultOk<T, E> => {
@@ -94,6 +97,7 @@ export const ok = <T, E = never>(value: T): ResultOk<T, E> => {
       }
       return handler(value);
     },
+    orElse: (): ResultOk<T, E> => ok(value),
   };
 };
 
@@ -129,6 +133,14 @@ export const err = <T, E>(error: E): ResultErr<T, E> => {
     unwrapErr: (): E => error,
     andThen: <U>(handler: (value: T) => Result<U, E>): ResultErr<never, E> => {
       return err(error);
+    },
+    orElse: <U>(handler: (error: E) => Result<U, E>): Result<U, E> => {
+      if (!isFunction(handler)) {
+        throw new Error(
+          "ResultErr.orElse(handler) expected @handler.err to be a function."
+        );
+      }
+      return handler(error);
     },
   };
 };
