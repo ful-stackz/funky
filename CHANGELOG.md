@@ -17,6 +17,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Result<T, E>.andThen` function with unit tests and docs
 - `Result<T, E>.orElse` function with unit tests and docs
 
+### Updated
+
+- Acknowledge the deprecation notice of @usefultools/monads and update the
+mention to point to @hqoss/monads instead
+
 ## [0.3.0] - 27/05/2020
 
 ### Added

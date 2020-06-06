@@ -9,7 +9,7 @@
 utilities into your next **Deno** masterpiece!
 
 This library is heavily inspired by the awesome
-[@usefultools/monads](https://www.npmjs.com/package/@usefultools/monads) npm package.
+[@hqoss/monads](https://github.com/hqoss/monads).
 
 ## API
 
