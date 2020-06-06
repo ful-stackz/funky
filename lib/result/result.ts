@@ -14,6 +14,7 @@ export interface Result<T, E> {
   readonly _type: ResultType;
   readonly isOk: boolean;
   readonly isErr: boolean,
+  map<U>(handler: (value: T) => U): Result<U, E>;
   match<U>(handler: ResultMatch<T, E, U>): U;
   matchOk(handler: (value: T) => void): void;
   matchErr(handler: (error: E) => void): void;
@@ -23,6 +24,7 @@ export interface Result<T, E> {
 }
 
 interface ResultOk<T, E = never> extends Result<T, E> {
+  map<U>(handler: (value: T) => U): ResultOk<U, never>;
   match<U>(handler: ResultMatch<T, never, U>): U;
   matchOk(handler: (value: T) => void): void;
   matchErr(handler: (error: E) => void): void;
@@ -31,6 +33,7 @@ interface ResultOk<T, E = never> extends Result<T, E> {
 }
 
 interface ResultErr<T, E> extends Result<T, E> {
+  map<U>(handler: (value: T) => U): ResultErr<never, E>;
   match<U>(handler: ResultMatch<never, E, U>): U;
   matchOk(handler: (value: T) => void): void;
   matchErr(handler: (error: E) => void): void;
@@ -49,6 +52,14 @@ export const ok = <T, E = never>(value: T): ResultOk<T, E> => {
     _type: ResultType.Ok,
     isOk: true,
     isErr: false,
+    map: <U>(handler: (value: T) => U): ResultOk<U, never> => {
+      if (!isFunction(handler)) {
+        throw new Error(
+          "ResultErr.map(handler) expected @handler to be a function."
+        );
+      }
+      return ok(handler(value));
+    },
     match: <U>(handler: ResultMatch<T, never, U>): U => {
       if (!isFunction(handler.ok)) {
         throw new Error(
@@ -81,6 +92,7 @@ export const err = <T, E>(error: E): ResultErr<T, E> => {
     _type: ResultType.Err,
     isOk: false,
     isErr: true,
+    map: (): ResultErr<never, E> => err(error),
     match: <U>(handler: ResultMatch<never, E, U>): U => {
       if (!isFunction(handler.err)) {
         throw new Error(

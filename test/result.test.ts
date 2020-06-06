@@ -12,6 +12,13 @@ const verifyResultOk = (value: any): void => {
   assert(result.isOk);
   assertEquals(result.isErr, false);
 
+  (() => {
+    const mapped = result.map(() => "mapped");
+    assertEquals(mapped.unwrap(), "mapped");
+    // @ts-ignore
+    assertThrows(() => result.map());
+  })();
+
   result.match({
     ok: (val) => {
       assertEquals(val, value);
@@ -39,6 +46,11 @@ const verifyResultErr = (error: any): void => {
 
   assert(result.isErr);
   assertEquals(result.isOk, false);
+
+  (() => {
+    const mapped = result.map(() => "mapped");
+    assert(mapped.isErr);
+  })();
 
   result.match({
     ok: () => {

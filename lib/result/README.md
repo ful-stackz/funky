@@ -5,6 +5,7 @@ This directory contains the `Result<T, E>` type along with some related utilitie
 - [`Result<T, E>`](#resultte)
   - [`isOk`](#isok)
   - [`isErr`](#iserr)
+  - [`map()`](#map)
   - [`match()`](#match)
   - [`matchOk()`](#matchok)
   - [`matchErr()`](#matcherr)
@@ -30,13 +31,13 @@ further split into `ResultOk<T, E>` and `ResultErr<T, E>`.
 - `ResultOk<T, E>` represents a result which contains a valid value.
 - `ResultErr<T, E>` represents a result which contains an error.
 
-## `isOk`
+### `isOk`
 
 > `Result<T, E>.isOk: boolean`
 
 Indicates whether the result is a `ResultOk` instance.
 
-### Examples
+#### Examples
 
 ```typescript
 const result = ok(42);
@@ -48,13 +49,13 @@ const result = err("error");
 console.log(result.isOk); // false
 ```
 
-## `isErr`
+### `isErr`
 
 > `Result<T, E>.isErr: boolean`
 
 Indicates whether the result is a `ResultErr` instance.
 
-### Examples
+#### Examples
 
 ```typescript
 const result = ok(42);
@@ -66,7 +67,31 @@ const result = err("error");
 console.log(result.isErr); // true
 ```
 
-## `match()`
+### `map()`
+
+> `Result<T, E>.map<U>(handler: (value: T) => U): Result<U, E>`
+
+If the result is a `ResultOk` instance invokes the `@handler`, providing the
+wrapped value as the argument. Returns the result of the `@handler` as a
+`Result`.
+Otherwise, when the result is a `ResultErr`instance returns `ResultErr`.
+
+#### Examples
+
+```typescript
+const result = ok(42);
+const mapped = result.map((value) => `The answer is ${value}`);
+console.log(mapped.unwrap()); // "The answer is 42"
+```
+
+```typescript
+const result = err("Could not find an answer");
+const mapped = result.map((value) => `The answer is ${value}`);
+console.log(mapped.unwrap()); // throws Error
+console.log(mapped.unwrapErr()); // "Could not find an answer"
+```
+
+### `match()`
 
 > `Result<T, E>.match<U>(handler: ResultMatch<T, E, U>): U`
 
@@ -81,7 +106,7 @@ If the result is a `ResultOk` instance then the `@handler.ok` function will be
 invoked, providing the wrapped value as the argument. Otherwise, the `@handler.err`
 function will be invoked, providing the wrapped error as the argument.
 
-### Examples
+#### Examples
 
 ```typescript
 const result = ok(42);
@@ -109,14 +134,14 @@ result.match({
 // outputs > "An error occurred: not found"
 ```
 
-## `matchOk()`
+### `matchOk()`
 
 > `Result<T, E>.matchOk(handler: (value: T) => void): void`
 
 If the result is a `ResultOk` instance then the `@handler` function will be
 invoked, providing the wrapped value as the argument.
 
-### Examples
+#### Examples
 
 ```typescript
 const result = ok(42);
@@ -134,14 +159,14 @@ result.matchOk((value) => {
 // outputs > nothing
 ```
 
-## `matchErr()`
+### `matchErr()`
 
 > `Result<T, E>.matchErr(handler: (error: E) => void): void`
 
 If the result is a `ResultErr` instance then the `@handler` function will be
 invoked, providing the wrapped error as the argument.
 
-### Examples
+#### Examples
 
 ```typescript
 const result = ok(42);
@@ -159,14 +184,14 @@ result.matchErr((error) => {
 // outputs > "An error occurred: not found"
 ```
 
-## `unwrap()`
+### `unwrap()`
 
 > `Result<T, E>.unwrap(): T | never`
 
 If the result is a `ResultOk` instance then the wrapped value will be returned.
 Otherwise, an `Error` is thrown.
 
-### Examples
+#### Examples
 
 ```typescript
 const result = ok(42);
@@ -185,7 +210,7 @@ console.log(result.unwrap()); // throws Error
 If the result is a `ResultOk` instance then the wrapped value will be returned.
 Otherwise, the `@def` value will be returned.
 
-### Examples
+#### Examples
 
 ```typescript
 const result = ok(42);
@@ -197,14 +222,14 @@ const result = err("error");
 console.log(result.unwrapOr(142)); // "142"
 ```
 
-## `unwrapErr()`
+### `unwrapErr()`
 
 > `Result<T, E>.unwrapErr(): E | never`
 
 If the result is a `ResultErr` instance then the wrapped error will be returned.
 Otherwise, an `Error` is thrown.
 
-### Examples
+#### Examples
 
 ```typescript
 const result = ok(42);
