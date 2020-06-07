@@ -10,6 +10,10 @@ interface OptionMatch<T, U> {
   none(): U;
 }
 
+/**
+ * Represents a runtime-safe value which is _optional_. An optional value is a value which might or might not be
+ * present. The `Option` type allows you to write safe code around that value, without unexpected runtime exceptions.
+ */
 export interface Option<T> {
   readonly _type: OptionType;
 
@@ -99,6 +103,9 @@ interface OptionNone<T = never> extends Option<T> {
   unwrap(): never;
 }
 
+/**
+ * Creates a new `OptionSome<T>` instance, wrapping the specified `@value`.
+ */
 export const some = <T>(value: T): OptionSome<T> => {
   if (isMissing(value)) {
     throw new Error(
@@ -150,6 +157,9 @@ export const some = <T>(value: T): OptionSome<T> => {
   };
 };
 
+/**
+ * Creates a new `OptionNone<T>` instance.
+ */
 export const none = <T = never>(): OptionNone<T> => {
   return {
     _type: OptionType.None,
@@ -187,6 +197,9 @@ export const none = <T = never>(): OptionNone<T> => {
   };
 };
 
+/**
+ * Type-safe check whether `@value` is of type `Option<T>`.
+ */
 export const isOption = <T>(value: Option<T> | any): value is Option<T> => {
   return (
     isObject(value) &&
@@ -194,6 +207,11 @@ export const isOption = <T>(value: Option<T> | any): value is Option<T> => {
   );
 };
 
+/**
+ * Type-safe check whether `@option` is of type `OptionSome<T>`.
+ *
+ * If `@option` is neither `OptionSome` nor `OptionNone` an `Error` is thrown.
+ */
 export const isSome = <T>(option: Option<T>): option is OptionSome<T> => {
   if (!isOption(option)) {
     throw new Error(
@@ -203,6 +221,11 @@ export const isSome = <T>(option: Option<T>): option is OptionSome<T> => {
   return option._type === OptionType.Some;
 };
 
+/**
+ * Type-safe check whether `@option` is of type `OptionNone<T>`.
+ *
+ * If `@option` is neither `OptionSome` nor `OptionNone` an `Error` is thrown.
+ */
 export const isNone = <T>(option: Option<T>): option is OptionNone<T> => {
   if (!isOption(option)) {
     throw new Error(

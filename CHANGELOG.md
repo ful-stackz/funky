@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.2] - 07/06/2020
+
+### Added
+
+- Missing in-code docs for
+  - `some()`
+  - `none()`
+  - `isSome()`
+  - `isNone()`
+  - `ok()`
+  - `err()`
+  - `isOk()`
+  - `isErr()`
+  - `isArray()`
+  - `Option`
+  - `Result`
+
 ## [0.3.1] - 07/06/2020
 
 ### Added
