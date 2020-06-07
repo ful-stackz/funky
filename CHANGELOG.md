@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 07/06/2020
+
 ### Added
 
 - `Option<T>.map` function with unit tests and docs
@@ -17,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Result<T, E>.andThen` function with unit tests and docs
 - `Result<T, E>.orElse` function with unit tests and docs
 - Add in-code docs for Option, Result and utils
+- Add link to doc.deno.land for browsing the documentation generated from the code
 
 ### Updated
 
