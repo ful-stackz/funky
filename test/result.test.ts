@@ -3,6 +3,7 @@ import {
   assertEquals,
   assertThrows,
   fail,
+  assertNotEquals,
 } from "https://deno.land/std/testing/asserts.ts";
 import { ok, err } from "../mod.ts";
 
@@ -11,6 +12,13 @@ const verifyResultOk = (value: any): void => {
 
   assert(result.isOk);
   assertEquals(result.isErr, false);
+
+  (() => {
+    const mapped = result.map(() => "mapped");
+    assertEquals(mapped.unwrap(), "mapped");
+    // @ts-ignore
+    assertThrows(() => result.map());
+  })();
 
   result.match({
     ok: (val) => {
@@ -32,6 +40,20 @@ const verifyResultOk = (value: any): void => {
   assertEquals(result.unwrap(), value);
   assertEquals(result.unwrapOr({} as any), value);
   assertThrows(() => result.unwrapErr());
+
+  (() => {
+    const nextOk = () => ok("success");
+    const nextErr = () => err("failed");
+    assertEquals(result.andThen(nextOk).unwrap(), "success");
+    // @ts-ignore
+    assertEquals(result.andThen(nextErr).unwrapErr(), "failed");
+  })();
+
+  // @ts-ignore
+  result.orElse(() => {
+    fail("ResultOk.orElse(handler) -> @handler should not be invoked");
+    return err({} as any);
+  });
 };
 
 const verifyResultErr = (error: any): void => {
@@ -39,6 +61,11 @@ const verifyResultErr = (error: any): void => {
 
   assert(result.isErr);
   assertEquals(result.isOk, false);
+
+  (() => {
+    const mapped = result.map(() => "mapped");
+    assert(mapped.isErr);
+  })();
 
   result.match({
     ok: () => {
@@ -60,6 +87,20 @@ const verifyResultErr = (error: any): void => {
   assertThrows(() => result.unwrap());
   assertEquals(result.unwrapOr(42), 42);
   assertEquals(result.unwrapErr(), error);
+
+  (() => {
+    const nextOk = () => ok("success");
+    const nextErr = () => err("failed");
+    assert(result.andThen(nextOk).isErr);
+    assert(result.andThen(nextErr).isErr);
+  })();
+
+  (() => {
+    const nextOk = () => ok("success");
+    const nextErr = () => err("failed");
+    assertEquals(result.orElse(nextOk).unwrap(), "success");
+    assertEquals(result.orElse(nextErr).unwrapErr(), "failed");
+  })();
 };
 
 Deno.test({

@@ -12,6 +12,13 @@ const verifyOptionSome = <T>(value: T): void => {
   assert(option.isSome);
   assertEquals(option.isNone, false);
 
+  (() => {
+    const mappedOption = option.map(() => "mapped");
+    assert(mappedOption.isSome);
+    assertEquals(mappedOption.isNone, false);
+    assertEquals(mappedOption.unwrap(), "mapped");
+  })();
+
   option.match({
     some: (val) => {
       assertEquals(val, value);
@@ -29,6 +36,24 @@ const verifyOptionSome = <T>(value: T): void => {
     fail();
   });
 
+  (() => {
+    const otherOption = some("default");
+    const orResult = option.or(otherOption);
+    assertEquals(orResult.unwrap(), value);
+  })();
+
+  (() => {
+    const otherOption = some("next");
+    const result = option.and(otherOption);
+    assertEquals(result.unwrap(), "next");
+  })();
+
+  (() => {
+    const next = () => some("pass");
+    const result = option.andThen(next);
+    assertEquals(result.unwrap(), "pass");
+  })();
+
   assertEquals(option.unwrap(), value);
   assertEquals(option.unwrapOr({} as any), value);
 };
@@ -38,6 +63,13 @@ const verifyOptionNone = <T>(): void => {
 
   assert(option.isNone);
   assertEquals(option.isSome, false);
+
+  (() => {
+    const mappedOption = option.map(() => "mapped");
+    assert(mappedOption.isNone);
+    assertEquals(mappedOption.isSome, false);
+    assertThrows(() => mappedOption.unwrap());
+  })();
 
   option.match({
     some: () => {
@@ -55,6 +87,24 @@ const verifyOptionNone = <T>(): void => {
   option.matchNone(() => {
     assert(true);
   });
+
+  (() => {
+    const otherOption = some("default");
+    const orResult = option.or(otherOption);
+    assertEquals(orResult.unwrap(), "default");
+  })();
+
+  (() => {
+    const otherOption = some("next");
+    const result = option.and(otherOption);
+    assert(result.isNone);
+  })();
+
+  (() => {
+    const next = (value: any) => some(value);
+    const result = option.andThen(next);
+    assert(result.isNone);
+  })();
 
   assertThrows(() => option.unwrap());
   assertEquals(option.unwrapOr(42 as any), 42);

@@ -12,30 +12,91 @@ export interface ResultMatch<T, E, U> {
 
 export interface Result<T, E> {
   readonly _type: ResultType;
+
+  /**
+   * Indicates whether the result is a `ResultOk` instance.
+   */
   readonly isOk: boolean;
+
+  /**
+   * Indicates whether the result is a `ResultErr` instance.
+   */
   readonly isErr: boolean,
+
+  /**
+   * If the result is a `ResultOk` instance invokes the `@handler` function, providing the wrapped value as the
+   * argument and returns the result. Otherwise, returns the original `ResultErr` instance.
+   */
+  map<U>(handler: (value: T) => U): Result<U, E>;
+
+  /**
+   * If the result is a `ResultOk` instance invokes the `@handler.ok` function, providing the wrapped value as the
+   * argument and returns the result.
+   *
+   * Otherwise, invokes the `@handler.err` function, providing the wrapped error as the argument and returns the result.
+   */
   match<U>(handler: ResultMatch<T, E, U>): U;
+
+  /**
+   * If the result is a `ResultOk` instance invokes the `@handler` function, providing the wrapped value as the
+   * argument.
+   */
   matchOk(handler: (value: T) => void): void;
+
+  /**
+   * If the result is a `ResultErr` instance invokes the `@handler` function, providing the wrapped error as the
+   * argument.
+   */
   matchErr(handler: (error: E) => void): void;
+
+  /**
+   * If the result is a `ResultOk` instance returns the wrapped value. Otherwise, throws an `Error`.
+   */
   unwrap(): T | never;
+
+  /**
+   * If the result is a `ResultErr` instance returns the specified `@def` value. Otherwise, returns the original
+   * wrapped value.
+   */
   unwrapOr(def: T): T;
+
+  /**
+   * If the result is a `ResultErr` instance returns the wrapped error. Otherwise, throws an `Error`.
+   */
   unwrapErr(): E | never;
+
+  /**
+   * If the result is a `ResultOk` instance invokes the `@handler` function, providing the wrapped value as the
+   * argument and returns the result. Otherwise, returns the original `ResultErr` instance.
+   */
+  andThen<U>(handler: (value: T) => Result<U, E>): Result<U, E>;
+
+  /**
+   * If the result is a `ResultErr` instance invokes the `@handler` function, providing the wrapped error as the
+   * argument and returns the result. Otherwise, returns the original `ResultOk` instance.
+   */
+  orElse<U>(handler: (error: E) => Result<U, E>): Result<T | U, E>;
 }
 
 interface ResultOk<T, E = never> extends Result<T, E> {
+  map<U>(handler: (value: T) => U): ResultOk<U, never>;
   match<U>(handler: ResultMatch<T, never, U>): U;
   matchOk(handler: (value: T) => void): void;
   matchErr(handler: (error: E) => void): void;
   unwrap(): T;
   unwrapErr(): never;
+  orElse<U>(handler: (error: E) => Result<U, E>): ResultOk<T, E>;
 }
 
 interface ResultErr<T, E> extends Result<T, E> {
+  map<U>(handler: (value: T) => U): ResultErr<never, E>;
   match<U>(handler: ResultMatch<never, E, U>): U;
   matchOk(handler: (value: T) => void): void;
   matchErr(handler: (error: E) => void): void;
   unwrap(): never;
   unwrapErr(): E;
+  andThen<U>(handler: (value: T) => Result<U, E>): ResultErr<never, E>;
+  orElse<U>(handler: (error: E) => Result<U, E>): Result<U, E>;
 }
 
 export const ok = <T, E = never>(value: T): ResultOk<T, E> => {
@@ -49,6 +110,14 @@ export const ok = <T, E = never>(value: T): ResultOk<T, E> => {
     _type: ResultType.Ok,
     isOk: true,
     isErr: false,
+    map: <U>(handler: (value: T) => U): ResultOk<U, never> => {
+      if (!isFunction(handler)) {
+        throw new Error(
+          "ResultErr.map(handler) expected @handler to be a function."
+        );
+      }
+      return ok(handler(value));
+    },
     match: <U>(handler: ResultMatch<T, never, U>): U => {
       if (!isFunction(handler.ok)) {
         throw new Error(
@@ -73,6 +142,15 @@ export const ok = <T, E = never>(value: T): ResultOk<T, E> => {
         "Cannot execute unwrapErr() on type ResultOk."
       );
     },
+    andThen: <U>(handler: (value: T) => Result<U, E>): Result<U, E> => {
+      if (!isFunction(handler)) {
+        throw new Error(
+          "ResultErr.andThen(handler) expected @handler to be a function."
+        );
+      }
+      return handler(value);
+    },
+    orElse: (): ResultOk<T, E> => ok(value),
   };
 };
 
@@ -81,6 +159,7 @@ export const err = <T, E>(error: E): ResultErr<T, E> => {
     _type: ResultType.Err,
     isOk: false,
     isErr: true,
+    map: (): ResultErr<never, E> => err(error),
     match: <U>(handler: ResultMatch<never, E, U>): U => {
       if (!isFunction(handler.err)) {
         throw new Error(
@@ -105,6 +184,17 @@ export const err = <T, E>(error: E): ResultErr<T, E> => {
     },
     unwrapOr: (def: T): T => def,
     unwrapErr: (): E => error,
+    andThen: <U>(handler: (value: T) => Result<U, E>): ResultErr<never, E> => {
+      return err(error);
+    },
+    orElse: <U>(handler: (error: E) => Result<U, E>): Result<U, E> => {
+      if (!isFunction(handler)) {
+        throw new Error(
+          "ResultErr.orElse(handler) expected @handler.err to be a function."
+        );
+      }
+      return handler(error);
+    },
   };
 };
 

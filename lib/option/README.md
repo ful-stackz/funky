@@ -5,9 +5,13 @@ This directory contains the `Option<T>` type along with some related utilities.
 - [`Option<T>`](#optiont)
   - [`isSome`](#issome)
   - [`isNone`](#isnone)
+  - [`map()`](#map)
   - [`match()`](#match)
   - [`matchSome()`](#matchsome)
   - [`matchNone()`](#matchnone)
+  - [`or()`](#or)
+  - [`and()`](#and)
+  - [`andThen()`](#andthen)
   - [`unwrap()`](#unwrap)
   - [`unwrapOr()`](#unwrapor)
 - [Utilties](#utilities)
@@ -61,6 +65,31 @@ console.log(option.isNone); // false
 ```typescript
 const option = none();
 console.log(option.isNone); // true
+```
+
+### `map()`
+
+> `Option<T>.map(handler: (value: T) => U): Option<U>`
+
+If the option is an `OptionSome` instance invokes the `@handler` function,
+providing the wrapped value as the argument. Returns the result of the
+`@handler` as an `Option`.
+Otherwise, when the option is an `OptionNone` instance returns `OptionNone`.
+
+#### Examples
+
+```typescript
+const option = some("42");
+const mapped = option.map(parseInt);
+console.log(typeof option.unwrap()); // string
+console.log(typeof mapped.unwrap()); // number
+```
+
+```typescript
+const option = none();
+const mapped = option.map(() => "value");
+console.log(option.isNone); // true
+console.log(mapped.isNone); // true
 ```
 
 ### `match()`
@@ -153,6 +182,91 @@ answer.matchNone(() => {
   console.log("No answer");
 });
 // outputs > "No answer"
+```
+
+### `or()`
+
+> `Option<T>.or<U>(other: Option<U>): Option<T | U>`
+
+If the option is an `OptionNone` returns `@other`. Otherwise keeps the original.
+
+#### Examples
+
+```typescript
+const option = some(42);
+const other = some("default");
+const result = option.or(other);
+console.log(result.unwrap()); // 42
+```
+
+```typescript
+const option = none();
+const other = some("default");
+const result = option.or(other);
+console.log(result.unwrap()); // "default"
+```
+
+### `and()`
+
+> `Option<T>.and<U>(other: Option<U>): Option<U>`
+
+If the option is an `OptionSome` instance returns `@other`. Otherwise returns
+`OptionNone`.
+
+#### Examples
+
+```typescript
+const a = some(42);
+const b = some("more");
+const result = a.and(b);
+console.log(result.isSome); // true
+```
+
+```typescript
+const a = some(42);
+const b = none();
+const result = a.and(b);
+console.log(result.isSome); // false
+```
+
+```typescript
+const a = none();
+const b = none();
+const result = a.and(b);
+console.log(result.isSome); // false
+```
+
+```typescript
+const a = none();
+const b = some(42);
+const result = a.and(b);
+console.log(result.isSome); // false
+```
+
+### `andThen()`
+
+> `Option<T>.andThen<U>(handler: (value: T) => Option<U>): Option<U>`
+
+If the option is an `OptionSome` instance invokes the `@handler` function,
+providing the wrapped value as the argument. Returns the result of the
+`@handler`.
+Otherwise, when the option is `OptionNone` returns `OptionNone`.
+
+This function is also known as `flatMap` in other languages.
+
+#### Examples
+
+```typescript
+const userId = 5;
+const findPersonById: Option<User> = (id) => { ... }
+const getFavoriteNumber: Option<number> = (user) => 42;
+console.log(some(userId).andThen(findPersonById).andThen(getFavoriteNumber).unwrap()); // 42
+```
+
+```typescript
+const findPersonById: Option<User> = (id) => { ... }
+const getFavoriteNumber: Option<number> = (user) => 42;
+console.log(none().andThen(findPersonById).andThen(getFavoriteNumber).isNone); // true
 ```
 
 ### `unwrap()`

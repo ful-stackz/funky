@@ -12,24 +12,90 @@ interface OptionMatch<T, U> {
 
 export interface Option<T> {
   readonly _type: OptionType;
+
+  /**
+   * Indicates whether the option is an `OptionSome` instance.
+   */
   readonly isSome: boolean;
+
+  /**
+   * Indicates whether the option is an `OptionNone` instance.
+   */
   readonly isNone: boolean;
+
+  /**
+   * If the option is an `OptionSome` instance invokes the `@handler` function, providing the wrapped value as the
+   * argument and returns the result as an `Option`. Otherwise, returns an `OptionNone` instance.
+   */
+  map<U>(handler: (value: T) => U): Option<U>;
+
+  /**
+   * If the option is an `OptionSome` instance invokes the `@handler.some` function, providing the wrapped value as the
+   * argument and returns the result.
+   *
+   * Otherwise, invokes the `@handler.none` function and returns the result.
+   */
   match<U>(handler: OptionMatch<T, U>): U;
+
+  /**
+   * If the option is an `OptionSome` instance invokes the `@handler` function, providing the wrapped value as the
+   * argument.
+   */
   matchSome(handler: (value: T) => void): void;
+
+  /**
+   * If the option is an `OptionSome` instance invokes the `@handler` function. Otherwise, the `@handler` function is
+   * _not_ invoked.
+   */
   matchNone(handler: () => void): void;
+
+  /**
+   * If the option is an `OptionNone` instance returns the specified `@other` option. Otherwise, returns the original
+   * `OptionSome` instance.
+   */
+  or<U>(other: Option<U>): Option<T | U>;
+
+  /**
+   * If the option is an `OptionSome` instance returns the specfied `@other` option. Otherwise, returns an `OptionNone`
+   * instance.
+   */
+  and<U>(other: Option<U>): Option<U>;
+
+  /**
+   * If the option is an `OptionSome` instance invokes the `@handler` function, providing the wrapped value as the
+   * argument and returns the result. Otherwise, returns an `OptionNone` instance.
+   */
+  andThen<U>(handler: (value: T) => Option<U>): Option<U>;
+
+  /**
+   * If the option is an `OptionSome` instance returns the wrapped value. Otherwise, throws an `Error`.
+   */
   unwrap(): T | never;
+
+  /**
+   * If the option is an `OptionNone` instance returns the specified `@def` value. Otherwise, returns the original
+   * wrapped value.
+   */
   unwrapOr(def: T): T;
 }
 
 interface OptionSome<T> extends Option<T> {
+  map<U>(handler: (value: T) => U): OptionSome<U>;
   matchSome(handler: (value: T) => void): void;
   matchNone(handler: () => void): void;
+  or<U>(other: Option<U>): Option<T>;
+  and<U>(other: Option<U>): Option<U>;
+  andThen<U>(handler: (value: T) => Option<U>): Option<U>;
   unwrap(): T;
 }
 
 interface OptionNone<T = never> extends Option<T> {
+  map<U>(handler: (value: T) => U): OptionNone<U>;
   matchSome(handler: (value: T) => void): void;
   matchNone(handler: () => void): void;
+  or<U>(other: Option<U>): Option<U>;
+  and<U>(other: Option<U>): OptionNone<U>;
+  andThen<U>(handler: (value: T) => Option<U>): OptionNone<U>;
   unwrap(): never;
 }
 
@@ -44,6 +110,14 @@ export const some = <T>(value: T): OptionSome<T> => {
     _type: OptionType.Some,
     isSome: true,
     isNone: false,
+    map: <U>(handler: (value: T) => U): OptionSome<U> => {
+      if (!isFunction(handler)) {
+        throw new Error(
+          "OptionSome.map(handler) expected @handler to be a function."
+        );
+      }
+      return some(handler(value));
+    },
     match: <U>(handler: OptionMatch<T, U>): U => {
       if (!isFunction(handler.some)) {
         throw new Error(
@@ -61,6 +135,16 @@ export const some = <T>(value: T): OptionSome<T> => {
       handler(value);
     },
     matchNone: (): void => {},
+    or: (): Option<T> => some(value),
+    and: <U>(other: Option<U>) => other,
+    andThen: <U>(handler: (value: T) => Option<U>): Option<U> => {
+      if (!isFunction(handler)) {
+        throw new Error(
+          "OptionSome.andThen(handler) expected @handler to be a function."
+        );
+      }
+      return handler(value);
+    },
     unwrap: (): T => value,
     unwrapOr: (): T => value,
   };
@@ -71,6 +155,9 @@ export const none = <T = never>(): OptionNone<T> => {
     _type: OptionType.None,
     isSome: false,
     isNone: true,
+    map: <U>(): OptionNone<U> => {
+      return none<U>();
+    },
     match: <U>(handler: OptionMatch<T, U>): U => {
       if (!isFunction(handler.none)) {
         throw new Error(
@@ -88,6 +175,9 @@ export const none = <T = never>(): OptionNone<T> => {
       }
       handler();
     },
+    or: <U>(other: Option<U>): Option<U> => other,
+    and: <U>(): OptionNone<U> => none<U>(),
+    andThen: <U>(): OptionNone<U> => none<U>(),
     unwrap: (): never => {
       throw new Error(
         "Cannot execute unwrap() on type OptionNone."

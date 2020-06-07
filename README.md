@@ -3,13 +3,14 @@
 > Getting `funky` with Deno!
 
 ![CI](https://github.com/ful-stackz/funky/workflows/CI/badge.svg?branch=master)
-[![deno.land status](https://img.shields.io/badge/deno.land%2Fx%2Ffunky-v0.3.0-green?style=flat&logo=deno)](https://deno.land/x/funky@v0.3.0)
+[![deno.land status](https://img.shields.io/badge/deno.land%2Fx%2Ffunky-v0.3.1-green?style=flat&logo=deno)](https://deno.land/x/funky@v0.3.1)
+[![deno.land docs](https://img.shields.io/badge/deno.land-docs-green?style=flat&logo=deno)](https://doc.deno.land/https/deno.land/x/funky@0.3.1/mod.ts)
 
 `funky` brings the beloved `Option<T>`, `Result<T, E>` and other functional 
 utilities into your next **Deno** masterpiece!
 
 This library is heavily inspired by the awesome
-[@usefultools/monads](https://www.npmjs.com/package/@usefultools/monads) npm package.
+[@hqoss/monads](https://github.com/hqoss/monads).
 
 ## API
 
@@ -39,7 +40,7 @@ This library is heavily inspired by the awesome
 import { Option, some, none } from "https://deno.land/x/funky/mod.ts";
 import { isUndefined } from "https://deno.land/x/funky/mod.ts";
 
-const getEnvVar = (key: string): Option<User> => {
+const getEnvVar = (key: string): Option<string> => {
   const value = Deno.env.get(key);
   return isUndefined(value) ? none() : some(value);
 };
