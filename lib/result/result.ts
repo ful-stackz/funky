@@ -5,7 +5,7 @@ enum ResultType {
   Err,
 }
 
-export interface ResultMatch<T, E, U> {
+interface ResultMatch<T, E, U> {
   ok(value: T): U;
   err(error: E): U;
 }
@@ -99,6 +99,9 @@ interface ResultErr<T, E> extends Result<T, E> {
   orElse<U>(handler: (error: E) => Result<U, E>): Result<U, E>;
 }
 
+/**
+ * Creates a new `ResultOk<T, E>` instance, wrapping the specified `@value`.
+ */
 export const ok = <T, E = never>(value: T): ResultOk<T, E> => {
   if (isMissing(value)) {
     throw new Error(
@@ -154,6 +157,9 @@ export const ok = <T, E = never>(value: T): ResultOk<T, E> => {
   };
 };
 
+/**
+ * Creates a new `ResultErr<T, E>` instance, wrapping the specified `@error`.
+ */
 export const err = <T, E>(error: E): ResultErr<T, E> => {
   return {
     _type: ResultType.Err,
@@ -198,6 +204,9 @@ export const err = <T, E>(error: E): ResultErr<T, E> => {
   };
 };
 
+/**
+ * Type-safe check whether `@value` is of type `Result<T, E>`.
+ */
 export const isResult = <T, E>(value: Result<T, E> | any): value is Result<T, E> => {
   return (
     isObject(value) &&
@@ -205,6 +214,11 @@ export const isResult = <T, E>(value: Result<T, E> | any): value is Result<T, E>
   );
 };
 
+/**
+ * Type-safe check whether `@result` is of type `ResultOk<T, E>`.
+ *
+ * If `@result` is neither `ResultOk` nor `ResultErr` an `Error` is thrown.
+ */
 export const isOk = <T, E>(result: Result<T, E>): result is ResultOk<T, E> => {
   if (!isResult(result)) {
     throw new Error(
@@ -214,6 +228,11 @@ export const isOk = <T, E>(result: Result<T, E>): result is ResultOk<T, E> => {
   return result._type === ResultType.Ok;
 };
 
+/**
+ * Type-safe check whether `@result` is of type `ResultErr<T, E>`.
+ *
+ * If `@result` is neither `ResultOk` nor `ResultErr` an `Error` is thrown.
+ */
 export const isErr = <T, E>(result: Result<T, E>): result is Result<T, E> => {
   if (!isResult(result)) {
     throw new Error(

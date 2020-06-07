@@ -54,6 +54,9 @@ export const isPresent = (value: any): boolean => {
   );
 };
 
+/**
+ * Type-safe check whether `@value` is an array.
+ */
 export const isArray = (value: any): value is any[] => {
   return Array.isArray(value);
 };
