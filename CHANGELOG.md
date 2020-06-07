@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `isOk()`
   - `isErr()`
   - `isArray()`
+  - `Option`
+  - `Result`
 
 ## [0.3.1] - 07/06/2020
 

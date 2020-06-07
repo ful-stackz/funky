@@ -10,6 +10,10 @@ interface OptionMatch<T, U> {
   none(): U;
 }
 
+/**
+ * Represents a runtime-safe value which is _optional_. An optional value is a value which might or might not be
+ * present. The `Option` type allows you to write safe code around that value, without unexpected runtime exceptions.
+ */
 export interface Option<T> {
   readonly _type: OptionType;
 

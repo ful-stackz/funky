@@ -10,6 +10,11 @@ interface ResultMatch<T, E, U> {
   err(error: E): U;
 }
 
+/**
+ * Represents a runtime-safe result of an operation. The operation might be successful, in which case a `Result`
+ * instance wrapping the produced value of type `T` is returned. Otherwise, when the operation fails a `Result`
+ * instance wrapping the error of type `E` is returned.
+ */
 export interface Result<T, E> {
   readonly _type: ResultType;
 
