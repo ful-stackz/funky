@@ -11,11 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `Option<T>.map` function with unit tests and docs
 - `Option<T>.or` function with unit tests and docs
-- `Option<T>and` function with unit tests and docs
+- `Option<T>.and` function with unit tests and docs
 - `Option<T>.andThen` function with unit tests and docs
 - `Result<T, E>.map` function with unit tests and docs
 - `Result<T, E>.andThen` function with unit tests and docs
 - `Result<T, E>.orElse` function with unit tests and docs
+- Add in-code docs for Option, Result and utils
 
 ### Updated
 

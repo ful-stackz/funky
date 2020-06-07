@@ -12,16 +12,70 @@ interface OptionMatch<T, U> {
 
 export interface Option<T> {
   readonly _type: OptionType;
+
+  /**
+   * Indicates whether the option is an `OptionSome` instance.
+   */
   readonly isSome: boolean;
+
+  /**
+   * Indicates whether the option is an `OptionNone` instance.
+   */
   readonly isNone: boolean;
+
+  /**
+   * If the option is an `OptionSome` instance invokes the `@handler` function, providing the wrapped value as the
+   * argument and returns the result as an `Option`. Otherwise, returns an `OptionNone` instance.
+   */
   map<U>(handler: (value: T) => U): Option<U>;
+
+  /**
+   * If the option is an `OptionSome` instance invokes the `@handler.some` function, providing the wrapped value as the
+   * argument and returns the result.
+   *
+   * Otherwise, invokes the `@handler.none` function and returns the result.
+   */
   match<U>(handler: OptionMatch<T, U>): U;
+
+  /**
+   * If the option is an `OptionSome` instance invokes the `@handler` function, providing the wrapped value as the
+   * argument.
+   */
   matchSome(handler: (value: T) => void): void;
+
+  /**
+   * If the option is an `OptionSome` instance invokes the `@handler` function. Otherwise, the `@handler` function is
+   * _not_ invoked.
+   */
   matchNone(handler: () => void): void;
+
+  /**
+   * If the option is an `OptionNone` instance returns the specified `@other` option. Otherwise, returns the original
+   * `OptionSome` instance.
+   */
   or<U>(other: Option<U>): Option<T | U>;
+
+  /**
+   * If the option is an `OptionSome` instance returns the specfied `@other` option. Otherwise, returns an `OptionNone`
+   * instance.
+   */
   and<U>(other: Option<U>): Option<U>;
+
+  /**
+   * If the option is an `OptionSome` instance invokes the `@handler` function, providing the wrapped value as the
+   * argument and returns the result. Otherwise, returns an `OptionNone` instance.
+   */
   andThen<U>(handler: (value: T) => Option<U>): Option<U>;
+
+  /**
+   * If the option is an `OptionSome` instance returns the wrapped value. Otherwise, throws an `Error`.
+   */
   unwrap(): T | never;
+
+  /**
+   * If the option is an `OptionNone` instance returns the specified `@def` value. Otherwise, returns the original
+   * wrapped value.
+   */
   unwrapOr(def: T): T;
 }
 

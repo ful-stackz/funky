@@ -12,16 +12,69 @@ export interface ResultMatch<T, E, U> {
 
 export interface Result<T, E> {
   readonly _type: ResultType;
+
+  /**
+   * Indicates whether the result is a `ResultOk` instance.
+   */
   readonly isOk: boolean;
+
+  /**
+   * Indicates whether the result is a `ResultErr` instance.
+   */
   readonly isErr: boolean,
+
+  /**
+   * If the result is a `ResultOk` instance invokes the `@handler` function, providing the wrapped value as the
+   * argument and returns the result. Otherwise, returns the original `ResultErr` instance.
+   */
   map<U>(handler: (value: T) => U): Result<U, E>;
+
+  /**
+   * If the result is a `ResultOk` instance invokes the `@handler.ok` function, providing the wrapped value as the
+   * argument and returns the result.
+   *
+   * Otherwise, invokes the `@handler.err` function, providing the wrapped error as the argument and returns the result.
+   */
   match<U>(handler: ResultMatch<T, E, U>): U;
+
+  /**
+   * If the result is a `ResultOk` instance invokes the `@handler` function, providing the wrapped value as the
+   * argument.
+   */
   matchOk(handler: (value: T) => void): void;
+
+  /**
+   * If the result is a `ResultErr` instance invokes the `@handler` function, providing the wrapped error as the
+   * argument.
+   */
   matchErr(handler: (error: E) => void): void;
+
+  /**
+   * If the result is a `ResultOk` instance returns the wrapped value. Otherwise, throws an `Error`.
+   */
   unwrap(): T | never;
+
+  /**
+   * If the result is a `ResultErr` instance returns the specified `@def` value. Otherwise, returns the original
+   * wrapped value.
+   */
   unwrapOr(def: T): T;
+
+  /**
+   * If the result is a `ResultErr` instance returns the wrapped error. Otherwise, throws an `Error`.
+   */
   unwrapErr(): E | never;
+
+  /**
+   * If the result is a `ResultOk` instance invokes the `@handler` function, providing the wrapped value as the
+   * argument and returns the result. Otherwise, returns the original `ResultErr` instance.
+   */
   andThen<U>(handler: (value: T) => Result<U, E>): Result<U, E>;
+
+  /**
+   * If the result is a `ResultErr` instance invokes the `@handler` function, providing the wrapped error as the
+   * argument and returns the result. Otherwise, returns the original `ResultOk` instance.
+   */
   orElse<U>(handler: (error: E) => Result<U, E>): Result<T | U, E>;
 }
 
